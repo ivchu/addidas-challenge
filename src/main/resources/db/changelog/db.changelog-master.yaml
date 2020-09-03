@@ -69,9 +69,12 @@ databaseChangeLog:
                   name: rating
                   type: number
               - column:
+                  name: date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
                   name: active
                   type: boolean
-
   - changeSet:
       id: 4
       author: root
