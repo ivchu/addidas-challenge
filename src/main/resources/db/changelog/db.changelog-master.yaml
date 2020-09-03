@@ -1,0 +1,184 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/db.changelog-product1.yaml
+  - changeSet:
+      id: 1
+      author: root
+      changes:
+        - createTable:
+            tableName: products
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(512)
+  - changeSet:
+      id: 2
+      author: root
+      comment: "Create test product"
+      changes:
+        - insert:
+            tableName: products
+            columns:
+              - column:
+                  name: title
+                  value: "test product 1"
+        - insert:
+            tableName: products
+            columns:
+              - column:
+                  name: title
+                  value: "test product 2"
+        - insert:
+            tableName: products
+            columns:
+              - column:
+                  name: title
+                  value: "test product 3"
+      rollback:
+        - delete:
+            tableName: users
+            where: title in ('test product 1', 'test product 2', 'test product 3')
+  - changeSet:
+      id: 3
+      author: root
+      comment: "Create review table"
+      changes:
+        - createTable:
+            tableName: reviews
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: BIGINT
+              - column:
+                  name: text
+                  type: clob
+              - column:
+                  name: rating
+                  type: number
+              - column:
+                  name: active
+                  type: boolean
+
+  - changeSet:
+      id: 4
+      author: root
+      comment: "Create test reviews"
+      changes:
+        - insert:
+            tableName: reviews
+            columns:
+              - column:
+                  name: text
+                  value: "test review 1 for product 1"
+              - column:
+                  name: rating
+                  valueNumeric: 5
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: product_id
+                  value: 1
+        - insert:
+            tableName: reviews
+            columns:
+              - column:
+                  name: text
+                  value: "test review 2 for product 1"
+              - column:
+                  name: rating
+                  valueNumeric: 4
+              - column:
+                  name: active
+                  valueBoolean: false
+              - column:
+                  name: product_id
+                  value: 1
+        - insert:
+            tableName: reviews
+            columns:
+              - column:
+                  name: text
+                  value: "test review 3 for product 1"
+              - column:
+                  name: rating
+                  valueNumeric: 3
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: product_id
+                  value: 1
+        - insert:
+            tableName: reviews
+            columns:
+              - column:
+                  name: text
+                  value: "test review 1 for product 2"
+              - column:
+                  name: rating
+                  valueNumeric: 2
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: product_id
+                  value: 2
+        - insert:
+            tableName: reviews
+            columns:
+              - column:
+                  name: text
+                  value: "test review 2 for product 2"
+              - column:
+                  name: rating
+                  valueNumeric: 5
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: product_id
+                  value: 2
+        - insert:
+            tableName: reviews
+            columns:
+              - column:
+                  name: text
+                  value: "test review 1 for product 3"
+              - column:
+                  name: rating
+                  valueNumeric: 5
+              - column:
+                  name: active
+                  valueBoolean: false
+              - column:
+                  name: product_id
+                  value: 3
+        - insert:
+            tableName: reviews
+            columns:
+              - column:
+                  name: text
+                  value: "test review 2 for product 3"
+              - column:
+                  name: rating
+                  valueNumeric: 5
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: product_id
+                  value: 3
