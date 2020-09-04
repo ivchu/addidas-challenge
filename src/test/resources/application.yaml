@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: addidas-challenge
+  datasource:
+    username: root
+    driver-class: org.hsqldb.jdbc.JDBCDriver
+    url: jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1;INIT=CREATE SCHEMA IF NOT EXISTS challenge
+  jpa:
+    show-sql:  true
+    hibernate:
+      ddl-auto: none

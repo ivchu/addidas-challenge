@@ -27,7 +27,7 @@ public class ReviewFacadeImpl implements ReviewFacade {
     @Override
     public ReviewDto createReview(Long productId, ReviewDto newReviewDto) {
         Review review = reviewMapper.createReview(newReviewDto);
-        return reviewMapper.mapToReviewDto(reviewService.saveReviewToProduct(review, productId));
+        return reviewMapper.mapToReviewDto(reviewService.addReviewToProduct(review, productId));
     }
 
     @Override
@@ -41,8 +41,8 @@ public class ReviewFacadeImpl implements ReviewFacade {
     }
 
     @Override
-    public Boolean deleteReview(Long productId, Long reviewId) {
-        return reviewService.deleteReview(reviewId);
+    public void deleteReview(Long productId, Long reviewId) {
+        reviewService.disableReview(productId, reviewId);
     }
 
     @Override

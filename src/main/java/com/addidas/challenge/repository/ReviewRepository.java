@@ -12,9 +12,9 @@ import java.util.Optional;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query
-    List<Review> findByActiveTrue();
+    Optional<Review> findByActiveTrueAndId(Long reviewId);
     @Query
-    List<Review> findByActiveTrueAndProductId(Long  productId);
+    Optional<Review> findByText(String text);
     @Query
     List<Review> findByActiveTrueAndProductId(Long  productId, Pageable pageable);
     @Query

@@ -9,7 +9,6 @@ import java.util.Map;
 
 @Configuration
 public class SearchConfiguration {
-
     @Bean
     public Map<String, Sort> sortingMap() {
         return ImmutableMap.<String, Sort>builder()

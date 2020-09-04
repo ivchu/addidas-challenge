@@ -1,16 +1,18 @@
 package com.addidas.challenge.service
 
 import com.addidas.challenge.entity.Review
+import com.addidas.challenge.exception.ReviewNotFoundException
 import com.addidas.challenge.repository.ReviewRepository
 import com.addidas.challenge.service.impl.ReviewServiceImpl
+import com.blogspot.toomuchcoding.spock.subjcollabs.Collaborator
+import com.blogspot.toomuchcoding.spock.subjcollabs.Subject
 import org.junit.Test
 import org.springframework.boot.test.context.SpringBootTest
 import spock.lang.Specification
-import com.blogspot.toomuchcoding.spock.subjcollabs.Collaborator
-import com.blogspot.toomuchcoding.spock.subjcollabs.Subject
+
 
 @SpringBootTest
-class ReviewServiceSpec extends Specification{
+class ReviewServiceSpec extends Specification {
     @Subject
     ReviewServiceImpl reviewService
     @Collaborator
@@ -27,17 +29,14 @@ class ReviewServiceSpec extends Specification{
         1 * reviewRepository.save(_)
     }
 
+
     @Test
-    def 'deleteReview should set active false and save entity to repository'() {
+    def 'deleteReview should throw ReviewNotFoundException if review is not presented for product'() {
         given:
-        def reviewMock = Spy(Review)
-        def id = 0L
-        reviewRepository.findById(id) >> Optional.of(reviewMock)
+        reviewRepository.findByActiveTrueAndIdAndProductId(*_) >> Optional.empty()
         when:
-        reviewService.deleteReview(id)
+        reviewService.disableReview(0L, 0L)
         then:
-        1 * reviewMock.setActive(false)
-        and:
-        1 * reviewRepository.save(reviewMock)
+        thrown(ReviewNotFoundException.class)
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,16 +26,14 @@ public class ReviewController {
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ReviewDto createReview(@PathVariable Long productId, @RequestBody ReviewDto newReview) {
+    public ReviewDto createReview(@PathVariable Long productId, @Valid @RequestBody ReviewDto newReview) {
         return reviewFacade.createReview(productId, newReview);
     }
 
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<Object> deleteReview(@PathVariable Long productId, @PathVariable Long reviewId) {
-        if (reviewFacade.deleteReview(productId, reviewId)) {
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
+    @ResponseStatus(code = HttpStatus.OK)
+    public void deleteReview(@PathVariable Long productId, @PathVariable Long reviewId) {
+        reviewFacade.deleteReview(productId, reviewId);
     }
 
     @PutMapping("/{reviewId}")

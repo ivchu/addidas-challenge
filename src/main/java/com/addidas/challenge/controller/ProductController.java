@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/*
+  OOS just utils controller =)
+ */
 @RestController
 public class ProductController {
     @Autowired
@@ -18,7 +21,6 @@ public class ProductController {
     @GetMapping("/products")
     public Iterable<ProductDto> getAllProducts() {
         Iterable<Product> all = productRepository.findAll();
-        Iterable<ProductDto> productDtos = productMapper.mapToProductsDto(all);
-        return productDtos;
+        return productMapper.mapToProductsDto(all);
     }
 }
