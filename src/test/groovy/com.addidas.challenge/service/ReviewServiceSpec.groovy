@@ -29,6 +29,18 @@ class ReviewServiceSpec extends Specification {
         1 * reviewRepository.save(_)
     }
 
+    @Test
+    def 'deleteReview should set active false and save entity to repository'() {
+        given:
+        def reviewSpy = Spy(Review)
+        def id = 0L
+        reviewRepository.findByActiveTrueAndIdAndProductId(*_) >> Optional.of(reviewSpy)
+        reviewRepository.save(reviewSpy) >> Mock(Review)
+        when:
+        reviewService.disableReview(0L, id)
+        then:
+        1 * reviewSpy.setActive(false)
+    }
 
     @Test
     def 'deleteReview should throw ReviewNotFoundException if review is not presented for product'() {
