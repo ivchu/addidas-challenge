@@ -8,5 +8,5 @@ import java.util.List;
 public class ProductDto {
     private String id;
     private String title;
-    private List<ReviewDto> reviews;
+    private List<FullReviewDto> reviews;
 }

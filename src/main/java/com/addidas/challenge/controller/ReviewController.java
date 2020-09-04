@@ -1,12 +1,8 @@
 package com.addidas.challenge.controller;
 
+import com.addidas.challenge.dto.FullReviewDto;
 import com.addidas.challenge.dto.ReviewDto;
-import com.addidas.challenge.dto.ShortReviewDto;
-import com.addidas.challenge.entity.Product;
-import com.addidas.challenge.entity.Review;
-import com.addidas.challenge.mapper.ReviewMapper;
-import com.addidas.challenge.repository.ProductRepository;
-import com.addidas.challenge.repository.ReviewRepository;
+import com.addidas.challenge.facade.ReviewFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,58 +21,44 @@ public class ReviewController {
     @Autowired
     private Map<String, Sort> sortingMap;
     @Autowired
-    private ReviewRepository reviewRepository;
-    @Autowired
-    private ProductRepository productRepository;
-    @Autowired
-    private ReviewMapper reviewMapper;
+    private ReviewFacade reviewFacade;
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ShortReviewDto createReview(@PathVariable Long productId, @RequestBody ReviewDto newReview){
-        Review review = reviewMapper.createReview(newReview);
-        Optional<Product> product = productRepository.findById(productId);
-        product.ifPresent(review::setProduct);
-
-        Review savedReview = reviewRepository.save(review);
-        return reviewMapper.mapToReviewDto(savedReview);
+    public ReviewDto createReview(@PathVariable Long productId, @RequestBody ReviewDto newReview) {
+        return reviewFacade.createReview(productId, newReview);
     }
 
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity deleteReview(@PathVariable Long productId, @PathVariable Long reviewId){
-        Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
-        if (!reviewOptional.isPresent()) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Object> deleteReview(@PathVariable Long productId, @PathVariable Long reviewId) {
+        if (reviewFacade.deleteReview(productId, reviewId)) {
+            return ResponseEntity.ok().build();
         }
-        reviewOptional.ifPresent(review -> {
-                    review.setActive(false);
-                    reviewRepository.save(review);
-                });
-        return ResponseEntity.ok().build();
+        return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{reviewId}")
-    public ResponseEntity updateReview(@PathVariable Long productId, @PathVariable Long reviewId, @RequestBody ReviewDto reviewDto){
-        Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
-        if (!reviewOptional.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        reviewOptional.ifPresent(review -> {
-                    reviewMapper.updateReview(reviewDto, review);
-                    reviewRepository.save(review);
-                });
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Object> updateReview(@PathVariable Long productId,
+                                               @PathVariable Long reviewId,
+                                               @RequestBody ReviewDto reviewDto) {
+        Optional<ReviewDto> shortReviewDto = reviewFacade.updateReview(reviewId, productId, reviewDto);
+        return shortReviewDto.<ResponseEntity<Object>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping()
-    public ResponseEntity<Object> getReviews(@PathVariable Long productId,
-                                     @RequestParam(required = false, defaultValue = "0") Integer page,
-                                     @RequestParam(required = false, defaultValue = "10") Integer pageSize,
-                                     @RequestParam(required = false, defaultValue = "dateAsc") String sortBy){
-        Sort sort = sortingMap.get(sortBy);
+    public ResponseEntity<List<FullReviewDto>> getReviews(@PathVariable Long productId,
+                                                          @RequestParam(required = false, defaultValue = "0") Integer page,
+                                                          @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+                                                          @RequestParam(required = false, defaultValue = "dateAsc") String sortBy) {
+        Sort sort = sortingMap.get(sortBy.toLowerCase());
         Pageable pageable = PageRequest.of(page, pageSize, sort);
-        List<Review> reviews = reviewRepository.findByActiveTrueAndProductId(productId, pageable);
-        List<ReviewDto> reviewDtos = reviewMapper.mapToReviewDtos(reviews);
-        return ResponseEntity.ok(reviewDtos);
+
+        List<FullReviewDto> activeReviews = reviewFacade.findActiveReviewsByProductId(productId, pageable);
+        return ResponseEntity.ok(activeReviews);
+    }
+
+    public void setSortingMap(Map<String, Sort> sortingMap) {
+        this.sortingMap = sortingMap;
     }
 }
